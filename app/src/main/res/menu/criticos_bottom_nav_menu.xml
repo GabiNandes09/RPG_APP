@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+    android:id="@+id/crit_acerto"
+    android:title="Acerto"
+    android:icon="@drawable/acerto_ico"/>
+    <item
+        android:id="@+id/crit_home"
+        android:title="Home"
+        android:icon="@drawable/home_ico"/>
+    <item
+        android:id="@+id/crit_erro"
+        android:title="Erro"
+        android:icon="@drawable/erro_ico"/>
+
+</menu>

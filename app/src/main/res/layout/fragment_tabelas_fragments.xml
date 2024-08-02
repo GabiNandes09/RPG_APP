@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/frameLayout4"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.TabelasFragments" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:layout_editor_absoluteX="-36dp"
+        tools:layout_editor_absoluteY="-136dp">
+
+        <Button
+            android:id="@+id/btnCriticos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="CRÍTICOS" />
+
+        <Button
+            android:id="@+id/btnMesas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="MESAS" />
+
+        <Button
+            android:id="@+id/btnMonstros"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="BESTIÁRIO" />
+
+        <Button
+            android:id="@+id/btnMagias"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="MAGIAS" />
+
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

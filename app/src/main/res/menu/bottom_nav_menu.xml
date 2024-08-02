@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <item android:id="@+id/nav_rolar"
+        android:title="Rolagem"
+        android:icon="@drawable/hex_ico"/>
+    <item android:id="@+id/nav_pj"
+        android:title="Personagens"
+        android:icon="@drawable/pj_ico"/>
+    <item android:id="@+id/nav_home"
+        android:title="Home"
+        android:icon="@drawable/home_ico"/>
+    <item android:id="@+id/nav_tabela"
+        android:title="Tabelas"
+        android:icon="@drawable/list_ico"/>
+    <item android:id="@+id/nav_settings"
+        android:title="Configurações"
+        android:icon="@drawable/set_icon"/>
+
+</menu>
