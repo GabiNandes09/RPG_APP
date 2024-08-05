@@ -10,16 +10,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.nandes.rpgall.R;
 import com.nandes.rpgall.adapters.Item_personagens_lista_adapter;
 import com.nandes.rpgall.databinding.ActivityPersonagemBinding;
+import com.nandes.rpgall.interfaces.IPersonagemView;
 import com.nandes.rpgall.modelDAOs.*;
 import com.nandes.rpgall.models.Personagens;
 
-public class PersonagemActivity extends AppCompatActivity {
+public class PersonagemActivity extends AppCompatActivity implements IPersonagemView {
 
-    ActivityPersonagemBinding binding;
-    Personagens pj = new Personagens();
-    MesasDAO mesasDAO;
-    SituacaoDAO situacaoDAO;
-    ClassesDAO classesDAO;
+    private ActivityPersonagemBinding binding;
+    private PersonagemPresenter presenter;
+
+
 
 
     @Override
@@ -29,47 +29,36 @@ public class PersonagemActivity extends AppCompatActivity {
         binding = ActivityPersonagemBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        InstanciaObjetos(this);
+        presenter = new PersonagemPresenter(this, this);
 
-        InstanciaPersongem(getIntent().getExtras());
+        presenter.loadPJDetails(getIntent().getExtras());
 
         binding.btnEditar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), CadastroPersonagemActivity.class);
-                intent.putExtra(Item_personagens_lista_adapter.PERSONAGEM, pj);
-                startActivity(intent);
+                presenter.onEditButtonClick();
             }
         });
     }
-
-    public void InstanciaPersongem(Bundle bundle){
-        if (bundle != null){
-            pj = (Personagens)bundle.getSerializable(Item_personagens_lista_adapter.PERSONAGEM);
-            configurarCabecalho(pj);
-        }
+    @Override
+    public void showPJDetails(String nome, String nivel, String mesa, String situacao, String classe) {
+        binding.txtNomePersonagem.setText(nome);
+        binding.txtNivelPersonagem.setText(nivel);
+        binding.txtMesaPersonagem.setText(mesa);
+        binding.txtSituacaoPersonagem.setText(situacao);
+        binding.txtClassePersonagem.setText(classe);
     }
 
-    public void InstanciaObjetos(Context context){
-        mesasDAO = new MesasDAO(context);
-        situacaoDAO = new SituacaoDAO(context);
-        classesDAO = new ClassesDAO(context);
+    @Override
+    public void navigateToEditScreen(Personagens pj) {
+        Intent intent = new Intent(this, CadastroPersonagemActivity.class);
+        intent.putExtra(Item_personagens_lista_adapter.PERSONAGEM, pj);
+        startActivity(intent);
     }
 
-    private void configurarCabecalho(Personagens pj) {
-
-
-        String nomeLabel = binding.getRoot().getContext().getString(R.string.nome_label, pj.getNome());
-        String nivelLabel = binding.getRoot().getContext().getString(R.string.nivel_label, pj.getNivel());
-        String mesaLabel = binding.getRoot().getContext().getString(R.string.mesa_label, mesasDAO.getMesaNomeByID(pj.getMesa()));
-        String situacaoLabel = binding.getRoot().getContext().getString(R.string.situacao_label, situacaoDAO.getSituacaoNomeByID(pj.getSituacao()));
-        String classeLabel = binding.getRoot().getContext().getString(R.string.classe_label, classesDAO.getClasseNomeByID(pj.getClasse()));
-
-
-        binding.txtNomePersonagem.setText(nomeLabel);
-        binding.txtNivelPersonagem.setText(nivelLabel);
-        binding.txtMesaPersonagem.setText(mesaLabel);
-        binding.txtSituacaoPersonagem.setText(situacaoLabel);
-        binding.txtClassePersonagem.setText(classeLabel);
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        presenter.onDestroy();
     }
 }
