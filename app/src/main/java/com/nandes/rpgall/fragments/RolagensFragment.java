@@ -15,15 +15,19 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.nandes.rpgall.adapters.Item_rolagens_lista_adapter;
 import com.nandes.rpgall.databinding.FragmentRolagensBinding;
+import com.nandes.rpgall.interfaces.IRolagensFragmentPresenter;
+import com.nandes.rpgall.interfaces.IRolagensFragmentView;
 import com.nandes.rpgall.models.Rolagem;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
-public class RolagensFragment extends Fragment {
+public class RolagensFragment extends Fragment implements IRolagensFragmentView {
 
     private FragmentRolagensBinding binding;
+    private IRolagensFragmentPresenter presenter;
 
     @Nullable
     @Override
@@ -31,87 +35,41 @@ public class RolagensFragment extends Fragment {
         binding = FragmentRolagensBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
-        String[] opcoes = {
-                "D4 (4 lados)",
-                "D6 (6 lados)",
-                "D8 (8 lados)",
-                "D10 (10 lados)",
-                "D12 (12 lados)",
-                "D20 (20 lados)",
-                "D100 (100 lados)"
-        };
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(
-                getContext(),
-                androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
-                opcoes
-        );
-        binding.spOpcoesRolar.setAdapter(spinnerAdapter);
+        presenter = new RolagensFragmentPresenter(this, getContext());
+
+        presenter.configureSpinner();
 
         binding.btnRolar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int dice = 0;
-                switch (binding.spOpcoesRolar.getSelectedItemPosition()) {
-                    case 0:
-                        dice = 4;
-                        break;
-                    case 1:
-                        dice = 6;
-                        break;
-                    case 2:
-                        dice = 8;
-                        break;
-                    case 3:
-                        dice = 10;
-                        break;
-                    case 4:
-                        dice = 12;
-                        break;
-                    case 5:
-                        dice = 20;
-                        break;
-                    case 6:
-                        dice = 100;
-                        break;
-                    default:
-                        Toast.makeText(getContext(), "Selecione uma opção", Toast.LENGTH_SHORT).show();
-                        return;
-                }
-
-                if (dice != 0) {
-                    Random random = new Random();
-                    int resultTotal = 0;
-                    int qtd;
-                    try {
-                        qtd = Integer.parseInt(binding.etxtQtdDados.getText().toString());
-                    } catch (NumberFormatException e) {
-                        Toast.makeText(getContext(), "Quantidade inválida", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-                    List<Rolagem> dados = new ArrayList<>();
-
-
-                    for (int i = 1; i <= qtd; i++) {
-                        int critico = -1;
-                        int result = random.nextInt(dice) + 1;
-                        if (result == 1) {
-                            critico = 0;
-                        } else if (result == dice) {
-                            critico = 1;
-                        }
-                        dados.add(new Rolagem(i, result, critico));
-                        resultTotal += result;
-                    }
-
-                    Item_rolagens_lista_adapter adapter = new Item_rolagens_lista_adapter(dados);
-                    binding.rvRolagens.setLayoutManager(new LinearLayoutManager(getContext()));
-                    binding.rvRolagens.setAdapter(adapter);
-
-                    binding.txtResultRolar.setText(String.valueOf(resultTotal));
-                }
+                    startDados();
             }
         });
-
         return view;
+    }
+    @Override
+    public void configureResult(List<Rolagem> list, int result) {
+        Item_rolagens_lista_adapter adapter = new Item_rolagens_lista_adapter(list);
+        binding.rvRolagens.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.rvRolagens.setAdapter(adapter);
+
+        binding.txtResultRolar.setText(String.valueOf(result));
+    }
+
+    @Override
+    public void startDados() {
+        int qtdDado = Integer.parseInt(binding.etxtQtdDados.getText().toString());
+        int dado = binding.spOpcoesRolar.getSelectedItemPosition();
+        presenter.rolarDado(dado, qtdDado);
+    }
+
+    @Override
+    public void setSpinnerAdapter(List<String> opcoes) {
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(
+                requireContext(),
+                androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
+                opcoes
+        );
+        binding.spOpcoesRolar.setAdapter(spinnerAdapter);
     }
 }
