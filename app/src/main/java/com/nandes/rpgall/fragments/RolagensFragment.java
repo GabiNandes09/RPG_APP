@@ -72,4 +72,10 @@ public class RolagensFragment extends Fragment implements IRolagensFragmentView 
         );
         binding.spOpcoesRolar.setAdapter(spinnerAdapter);
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        presenter.onDestroy();
+    }
 }

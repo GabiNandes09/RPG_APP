@@ -96,4 +96,9 @@ public class RolagensFragmentPresenter implements IRolagensFragmentPresenter {
             view.configureResult(dados, resultTotal);
         }
     }
+
+    @Override
+    public void onDestroy() {
+        view = null;
+    }
 }

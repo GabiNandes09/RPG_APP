@@ -17,17 +17,20 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.nandes.rpgall.activities.CadastroPersonagemActivity;
 import com.nandes.rpgall.adapters.Item_personagens_lista_adapter;
 import com.nandes.rpgall.databinding.FragmentPersonagensBinding;
+import com.nandes.rpgall.interfaces.IPersonagemFragmentPresenter;
+import com.nandes.rpgall.interfaces.IPersonagemFragmentView;
 import com.nandes.rpgall.modelDAOs.PersonagensDAO;
 import com.nandes.rpgall.models.Personagens;
 
 import java.util.List;
+import java.util.Objects;
 
-public class PersonagensFragment extends Fragment {
+public class PersonagensFragment extends Fragment implements IPersonagemFragmentView {
 
     FragmentPersonagensBinding binding;
-    PersonagensDAO personagensDAO;
-    Item_personagens_lista_adapter adapter;
-    List<Personagens> personagensList;
+
+    private IPersonagemFragmentPresenter presenter;
+
 
     @Nullable
     @Override
@@ -35,41 +38,37 @@ public class PersonagensFragment extends Fragment {
         binding = FragmentPersonagensBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
-        personagensDAO = new PersonagensDAO(this.getContext());
+        presenter = new PersonagensFragmentPresenter(this, getContext());
 
-
-        atualizarListaPersonagens();
-
-
-
+        presenter.criaAdapter();
 
         binding.btnAddPJ.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getContext(), CadastroPersonagemActivity.class);
-
-
-                startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(getActivity()).toBundle());
+                presenter.onBtnEditarClick();
             }
         });
-
-
-
         return view;
-    }
-
-    private void atualizarListaPersonagens() {
-
-        personagensList = personagensDAO.listarTodosPersonagens();
-        adapter = new Item_personagens_lista_adapter(personagensList, getContext());
-        binding.rvPersonagens.setLayoutManager(new LinearLayoutManager(getContext()));
-        binding.rvPersonagens.setAdapter(adapter);
-        binding.rvPersonagens.addItemDecoration(new DividerItemDecoration(this.getContext(), RecyclerView.HORIZONTAL));
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        atualizarListaPersonagens();
+        presenter.criaAdapter();
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        presenter.onDestroy();
+    }
+
+    @Override
+    public void setAdapter(RecyclerView.Adapter adapter) {
+        binding.rvPersonagens.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.rvPersonagens.setAdapter(adapter);
+        binding.rvPersonagens.addItemDecoration(new DividerItemDecoration(this.requireContext(), RecyclerView.HORIZONTAL));
+    }
+
+
 }

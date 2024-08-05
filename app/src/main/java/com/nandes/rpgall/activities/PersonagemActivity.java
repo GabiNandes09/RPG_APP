@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.nandes.rpgall.R;
 import com.nandes.rpgall.adapters.Item_personagens_lista_adapter;
 import com.nandes.rpgall.databinding.ActivityPersonagemBinding;
+import com.nandes.rpgall.interfaces.IPersonagemPresenter;
 import com.nandes.rpgall.interfaces.IPersonagemView;
 import com.nandes.rpgall.modelDAOs.*;
 import com.nandes.rpgall.models.Personagens;
@@ -17,7 +18,7 @@ import com.nandes.rpgall.models.Personagens;
 public class PersonagemActivity extends AppCompatActivity implements IPersonagemView {
 
     private ActivityPersonagemBinding binding;
-    private PersonagemPresenter presenter;
+    private IPersonagemPresenter presenter;
 
 
 
