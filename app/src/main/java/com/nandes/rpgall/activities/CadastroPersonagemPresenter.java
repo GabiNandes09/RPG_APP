@@ -65,9 +65,7 @@ public class CadastroPersonagemPresenter implements ICadastroPersonagemPresenter
     public void onSaveButtonClick() {
         if (
                 !view.getNome().isEmpty() &&
-                        !view.getNivel().isEmpty() &&
-                        view.getClasseIndex() != 0 &&
-                        view.getSituacaoIndex() != 0
+                        !view.getNivel().isEmpty()
         ) {
             Situacao situacao = situacoes.get(view.getSituacaoIndex());
             Mesa mesa = mesas.get(view.getMesaIndex());
