@@ -43,5 +43,6 @@ public class PersonagensFragmentPresenter implements IPersonagemFragmentPresente
     @Override
     public void onDestroy() {
         view = null;
+        personagensDAO = null;
     }
 }

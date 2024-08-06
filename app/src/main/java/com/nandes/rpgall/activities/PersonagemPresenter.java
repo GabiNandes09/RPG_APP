@@ -51,5 +51,9 @@ public class PersonagemPresenter implements IPersonagemPresenter {
     @Override
     public void onDestroy() {
         view = null;
+        situacaoDAO = null;
+        mesasDAO = null;
+        classesDAO = null;
+        pj = null;
     }
 }

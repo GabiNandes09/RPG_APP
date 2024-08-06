@@ -60,24 +60,13 @@ public class item_Personagem_Lista_Adapter_Presenter implements Iitem_Personagem
     public void onDeleteClick(List<Personagens> list, int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage(R.string.deletar_mensagem)
-                .setPositiveButton(R.string.sim, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        personagensDAO.apagarPersonagem(pj);
-                        list.remove(position);
-                        view.notifyRecyclerViewDelete(list, position);
-                    }
+                .setPositiveButton(R.string.sim, (dialog, which) -> {
+                    personagensDAO.apagarPersonagem(pj);
+                    list.remove(position);
+                    view.notifyRecyclerViewDelete(list, position);
                 })
-                .setNegativeButton(R.string.nao, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        Toast.makeText(
-                                        context,
-                                        "Cancelado",
-                                        Toast.LENGTH_SHORT)
-                                .show();
-                    }
-                })
+                .setNegativeButton(R.string.nao, (dialog, which) ->
+                        Toast.makeText(context, "Cancelado", Toast.LENGTH_SHORT).show())
                 .show();
     }
 
@@ -91,5 +80,10 @@ public class item_Personagem_Lista_Adapter_Presenter implements Iitem_Personagem
     @Override
     public void onDestroy() {
         view = null;
+        context = null;
+        personagensDAO = null;
+        mesasDAO = null;
+        situacaoDAO = null;
+        classesDAO = null;
     }
 }

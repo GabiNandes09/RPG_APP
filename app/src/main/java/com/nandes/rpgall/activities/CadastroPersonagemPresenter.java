@@ -112,6 +112,10 @@ public class CadastroPersonagemPresenter implements ICadastroPersonagemPresenter
     @Override
     public void onDestroy() {
         view = null;
+        situacaoDAO = null;
+        mesasDAO = null;
+        classesDAO = null;
+        personagensDAO = null;
     }
 
     private int setSituacao(int id, List<Situacao> list) {

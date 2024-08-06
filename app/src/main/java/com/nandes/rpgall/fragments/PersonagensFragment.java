@@ -63,6 +63,8 @@ public class PersonagensFragment extends Fragment implements IPersonagemFragment
         presenter.onDestroy();
     }
 
+
+
     @Override
     public void setAdapter(RecyclerView.Adapter adapter) {
         binding.rvPersonagens.setLayoutManager(new LinearLayoutManager(getContext()));

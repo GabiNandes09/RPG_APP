@@ -21,7 +21,7 @@ import java.util.List;
 
 public class Item_personagens_lista_adapter extends RecyclerView.Adapter<Item_personagens_lista_adapter.item_personagens_lista_ViewHolder>  {
 
-    Context context;
+    private final Context context;
     public static final String PERSONAGEM = "Personagem";
     private List<Personagens> lista;
 
@@ -32,7 +32,7 @@ public class Item_personagens_lista_adapter extends RecyclerView.Adapter<Item_pe
         this.context = context;
     }
 
-    class item_personagens_lista_ViewHolder extends RecyclerView.ViewHolder implements Iitem_Personagem_Lista_Adapter_View {
+    public class item_personagens_lista_ViewHolder extends RecyclerView.ViewHolder implements Iitem_Personagem_Lista_Adapter_View {
         private final ItemPersonagensListaBinding binding;
         private Iitem_Personagem_Lista_Adapter_Presenter presenter;
 
@@ -74,25 +74,16 @@ public class Item_personagens_lista_adapter extends RecyclerView.Adapter<Item_pe
 
     @Override
     public void onBindViewHolder(@NonNull item_personagens_lista_ViewHolder holder, int position) {
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                holder.presenter.onItemClick();
-            }
-        });
-        holder.binding.btnDeletarPj.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                holder.presenter.onDeleteClick(lista, holder.getAdapterPosition());
-            }
-        });
-        holder.binding.btnComentPj.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                holder.presenter.onComentsClick();
-            }
-        });
-        holder.presenter.getPJDetails(lista, holder.getAdapterPosition());
+        if (holder.presenter == null || lista == null || position >= lista.size()) {
+            return;
+        }
+        holder.itemView.setOnClickListener(v -> holder.presenter.onItemClick());
+
+        holder.binding.btnDeletarPj.setOnClickListener(v -> holder.presenter.onDeleteClick(lista, holder.getAdapterPosition()));
+
+        holder.binding.btnComentPj.setOnClickListener(v -> holder.presenter.onComentsClick());
+
+        holder.presenter.getPJDetails(lista, position);
     }
 
     @Override
