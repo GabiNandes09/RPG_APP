@@ -12,38 +12,55 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.nandes.rpgall.R;
-import com.nandes.rpgall.activities.ComentariosActivity;
-import com.nandes.rpgall.activities.PersonagemActivity;
 import com.nandes.rpgall.databinding.ItemPersonagensListaBinding;
-import com.nandes.rpgall.modelDAOs.*;
+import com.nandes.rpgall.interfaces.Iitem_Personagem_Lista_Adapter_Presenter;
+import com.nandes.rpgall.interfaces.Iitem_Personagem_Lista_Adapter_View;
 import com.nandes.rpgall.models.*;
 
 import java.util.List;
 
-public class Item_personagens_lista_adapter extends RecyclerView.Adapter<Item_personagens_lista_adapter.item_personagens_lista_ViewHolder> {
+public class Item_personagens_lista_adapter extends RecyclerView.Adapter<Item_personagens_lista_adapter.item_personagens_lista_ViewHolder>  {
 
-    private List<Personagens> lista;
-    private PersonagensDAO personagensDAO;
-    private MesasDAO mesasDAO;
-    private SituacaoDAO situacaoDAO;
-    private ClassesDAO classesDAO;
-    Context context;
-
+    private final Context context;
     public static final String PERSONAGEM = "Personagem";
+    private List<Personagens> lista;
+
+
 
     public Item_personagens_lista_adapter(List<Personagens> lista, Context context) {
         this.lista = lista;
         this.context = context;
     }
 
-    static class item_personagens_lista_ViewHolder extends RecyclerView.ViewHolder {
+    public class item_personagens_lista_ViewHolder extends RecyclerView.ViewHolder implements Iitem_Personagem_Lista_Adapter_View {
         private final ItemPersonagensListaBinding binding;
+        private Iitem_Personagem_Lista_Adapter_Presenter presenter;
 
         public item_personagens_lista_ViewHolder(@NonNull ItemPersonagensListaBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
+            presenter = new item_Personagem_Lista_Adapter_Presenter(this, context);
+        }
+
+        @Override
+        public void showPJDetails(String nome, String nivel, String mesa, String situacao, String classe) {
+            binding.txtNomePersonagem.setText(nome);
+            binding.txtNivelPersonagem.setText(nivel);
+            binding.txtMesaPersonagem.setText(mesa);
+            binding.txtSituacaoPersonagem.setText(situacao);
+            binding.txtClassePersonagem.setText(classe);
+        }
+
+        @Override
+        public void showToast(String message) {
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void notifyRecyclerViewDelete(List<Personagens> list, int position) {
+            notifyItemRemoved(position);
+            notifyItemRangeChanged(position, list.size());
+            showToast("Item deletado");
         }
     }
 
@@ -57,75 +74,21 @@ public class Item_personagens_lista_adapter extends RecyclerView.Adapter<Item_pe
 
     @Override
     public void onBindViewHolder(@NonNull item_personagens_lista_ViewHolder holder, int position) {
-        personagensDAO = new PersonagensDAO(holder.itemView.getContext());
-        mesasDAO = new MesasDAO(holder.itemView.getContext());
-        situacaoDAO = new SituacaoDAO(holder.itemView.getContext());
-        classesDAO = new ClassesDAO(holder.itemView.getContext());
+        if (holder.presenter == null || lista == null || position >= lista.size()) {
+            return;
+        }
+        holder.itemView.setOnClickListener(v -> holder.presenter.onItemClick());
 
-        Personagens pj = lista.get(holder.getAdapterPosition());
+        holder.binding.btnDeletarPj.setOnClickListener(v -> holder.presenter.onDeleteClick(lista, holder.getAdapterPosition()));
 
-        String nomeLabel = holder.binding.getRoot().getContext().getString(R.string.nome_label, pj.getNome());
-        String nivelLabel = holder.binding.getRoot().getContext().getString(R.string.nivel_label, pj.getNivel());
-        String mesaLabel = holder.binding.getRoot().getContext().getString(R.string.mesa_label, mesasDAO.getMesaNomeByID(pj.getMesa()));
-        String situacaoLabel = holder.binding.getRoot().getContext().getString(R.string.situacao_label, situacaoDAO.getSituacaoNomeByID(pj.getSituacao()));
-        String classeLabel = holder.binding.getRoot().getContext().getString(R.string.classe_label, classesDAO.getClasseNomeByID(pj.getClasse()));
+        holder.binding.btnComentPj.setOnClickListener(v -> holder.presenter.onComentsClick());
 
-
-        holder.binding.txtNomePersonagem.setText(nomeLabel);
-        holder.binding.txtNivelPersonagem.setText(nivelLabel);
-        holder.binding.txtMesaPersonagem.setText(mesaLabel);
-        holder.binding.txtSituacaoPersonagem.setText(situacaoLabel);
-        holder.binding.txtClassePersonagem.setText(classeLabel);
-
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), PersonagemActivity.class);
-                intent.putExtra(PERSONAGEM, pj);
-                context.startActivity(intent);
-            }
-        });
-        holder.binding.btnDeletarPj.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-                builder.setMessage(R.string.deletar_mensagem)
-                        .setPositiveButton(R.string.sim, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                personagensDAO.apagarPersonagem(pj);
-                                lista.remove(holder.getAdapterPosition());
-                                notifyItemRemoved(holder.getAdapterPosition());
-                                notifyItemRangeChanged(holder.getAdapterPosition(), lista.size());
-                            }
-                        })
-                        .setNegativeButton(R.string.nao, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                Toast.makeText(
-                                                v.getContext(),
-                                                "Cancelado",
-                                                Toast.LENGTH_SHORT)
-                                        .show();
-                            }
-                        })
-                        .show();
-            }
-        });
-        holder.binding.btnComentPj.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), ComentariosActivity.class);
-                intent.putExtra(PERSONAGEM, pj);
-                context.startActivity(intent);
-            }
-        });
+        holder.presenter.getPJDetails(lista, position);
     }
 
     @Override
     public int getItemCount() {
         return lista.size();
     }
-
 
 }

@@ -3,26 +3,22 @@ package com.nandes.rpgall.dialogues;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import com.nandes.rpgall.databinding.DialogueAddMesasBinding;
-import com.nandes.rpgall.modelDAOs.*;
+import com.nandes.rpgall.interfaces.IDialogAddMesasPresenter;
+import com.nandes.rpgall.interfaces.IDialogAddMesasView;
 import com.nandes.rpgall.models.*;
-
-import java.util.ArrayList;
 import java.util.List;
 
-public class DialogAddMesas extends Dialog {
-    private Context mContext;
-    MesasDAO mesasDAO;
-    SituacaoDAO situacaoDAO;
+public class DialogAddMesas extends Dialog implements IDialogAddMesasView {
     private DialogueAddMesasBinding binding;
-    List<Situacao> situacoes;
-
-    private static final String ACTION_UPDATE_MESAS = "com.nandes.rpgall.UPDATE_MESAS";
+    private Context mContext;
+    private IDialogAddMesasPresenter presenter;
+    static final String ACTION_UPDATE_MESAS = "com.nandes.rpgall.UPDATE_MESAS";
 
 
     public DialogAddMesas(Context context) {
@@ -36,14 +32,14 @@ public class DialogAddMesas extends Dialog {
         binding = DialogueAddMesasBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        mesasDAO = new MesasDAO(getContext());
-        situacaoDAO = new SituacaoDAO(getContext());
+        presenter = new DialoigAddMesasPresenter(this, mContext);
 
-        configurarSpSituacao();
+        presenter.configurarSpinner();
 
         binding.btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                presenter.onDestroy();
                 dismiss();
             }
         });
@@ -51,35 +47,36 @@ public class DialogAddMesas extends Dialog {
         binding.btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                gravarMesa();
+                onSalvarClick();
                 dismiss();
             }
         });
     }
-    private void configurarSpSituacao(){
-        situacoes = situacaoDAO.getAllSituacao();
-        List<String> opcoes = new ArrayList<>();
-        for (Situacao situacao : situacoes){
-            if (situacao.getId() != 4){
-                opcoes.add(situacao.getNome());
-            }
+
+    @Override
+    public void setSpinner(List<Situacao> situacoes) {
+        if (situacoes != null){
+            ArrayAdapter<Situacao> adapter = new ArrayAdapter<>(getContext(),
+                    androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
+                    situacoes);
+            binding.spSituacaoAddMesa.setAdapter(adapter);
         }
-        ArrayAdapter<Situacao> adapter = new ArrayAdapter<>(getContext(),
-                androidx.appcompat.R.layout.support_simple_spinner_dropdown_item,
-                situacoes);
-        binding.spSituacaoAddMesa.setAdapter(adapter);
     }
 
-    private void gravarMesa() {
-
+    @Override
+    public void onSalvarClick(){
         Situacao situacao = (Situacao) binding.spSituacaoAddMesa.getSelectedItem();
+        String nome = binding.eTxtNome.getText().toString();
+        if (situacao != null && !nome.isEmpty()){
+            presenter.salvarMesa(situacao.getId(), nome);
+        } else {
+            showToast("Algo deu errado");
+        }
 
-        Mesa mesa = new Mesa(
-                binding.eTxtNome.getText().toString(),
-                situacao.getId());
-        mesasDAO.gravarMesa(mesa);
+    }
 
-        Intent intent = new Intent(ACTION_UPDATE_MESAS);
-        mContext.sendBroadcast(intent);
+    @Override
+    public void showToast(String message) {
+        Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
     }
 }

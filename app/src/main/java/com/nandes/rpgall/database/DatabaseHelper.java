@@ -38,6 +38,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String MESA_NOME = "NOME";
     public static final String MESA_SITUACAO = "ID_SITUACAO";
 
+    //CONSTANTES TIPO_DANO
+    public static final String DANO_P_TABLE = "TIPO_DANO";
+    public static final String DANO_P_ID = "ID";
+    public static final String DANO_P_NOME = "NOME";
+
+    //CONSTANTES TIPO_DANO_SECUNDARIO
+    public static final String DANO_S_TABLE = "TIPO_DANO_SECUNDARIO";
+    public static final String DANO_S_ID = "ID";
+    public static final String DANO_S_NOME = "NOME";
+
+    //CONSTANTES TIPO_DANO_TOTAL
+    public static final String DANO_T_TABLE = "TIPO_DANO_TOTAL";
+    public static final String DANO_T_P = "ID_P";
+    public static final String DANO_T_S = "ID_S";
+
     public DatabaseHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -152,6 +167,43 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
+        String sql = "CREATE TABLE " + DANO_P_TABLE + " (" +
+                DANO_P_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                DANO_P_NOME + " VARCHAR(15) UNIQUE " +
+                ")";
 
+        try{
+            db.execSQL(sql);
+            Log.i("Nandes", "Tabela tipo_dano criada");
+        } catch (SQLException e){
+            Log.i("Nandes", "Erro ao criar tabela tipo_dano");
+        }
+
+
+        sql = "CREATE TABLE " + DANO_S_TABLE + " (" +
+                DANO_S_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                DANO_S_NOME + " VARCHAR(15) UNIQUE " +
+                ")";
+
+        try{
+            db.execSQL(sql);
+            Log.i("Nandes", "Tabela tipo_dano_secundario criada");
+        } catch (SQLException e){
+            Log.i("Nandes", "Erro ao criar tabela tipo_dano_secundario");
+        }
+
+        sql = "CREATE TABLE " + DANO_T_TABLE + " (" +
+                DANO_T_P + " INT, " +
+                DANO_T_S + " INT, " +
+                "FOREIGN KEY (" + DANO_T_P + " ) REFERENCES " + DANO_P_TABLE + "(" + DANO_P_ID + "), " +
+                "FOREIGN KEY (" + DANO_T_S + " ) REFERENCES " + DANO_S_TABLE + "(" + DANO_S_ID + ") " +
+                ")";
+
+        try{
+            db.execSQL(sql);
+            Log.i("Nandes", "Tabela tipo_dano_total criada");
+        } catch (SQLException e){
+            Log.i("Nandes", "Erro ao criar tabela tipo_dano_total");
+        }
     }
 }
