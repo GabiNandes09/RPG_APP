@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -34,12 +35,10 @@ public class PersonagemActivity extends AppCompatActivity implements IPersonagem
 
         presenter.loadPJDetails(getIntent().getExtras());
 
-        binding.btnEditar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                presenter.onEditButtonClick();
-            }
-        });
+        binding.btnEditar.setOnClickListener(v -> presenter.onEditButtonClick());
+
+        binding.btnAtivar.setOnClickListener(v -> presenter.onAtivarButtonClick());
+
     }
     @Override
     public void showPJDetails(String nome, String nivel, String mesa, String situacao, String classe) {
@@ -55,6 +54,11 @@ public class PersonagemActivity extends AppCompatActivity implements IPersonagem
         Intent intent = new Intent(this, CadastroPersonagemActivity.class);
         intent.putExtra(Item_personagens_lista_adapter.PERSONAGEM, pj);
         startActivity(intent);
+    }
+
+    @Override
+    public void showToast(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 
     @Override

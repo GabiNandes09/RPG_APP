@@ -3,6 +3,7 @@ package com.nandes.rpgall.activities;
 import android.content.Context;
 import android.os.Bundle;
 
+import com.nandes.rpgall.MyApp;
 import com.nandes.rpgall.R;
 import com.nandes.rpgall.adapters.Item_personagens_lista_adapter;
 import com.nandes.rpgall.interfaces.IPersonagemPresenter;
@@ -18,6 +19,7 @@ public class PersonagemPresenter implements IPersonagemPresenter {
     private MesasDAO mesasDAO;
     private SituacaoDAO situacaoDAO;
     private ClassesDAO classesDAO;
+    private PersonagensDAO personagensDAO;
 
     public PersonagemPresenter (IPersonagemView view, Context context){
         this.view = view;
@@ -25,6 +27,7 @@ public class PersonagemPresenter implements IPersonagemPresenter {
         mesasDAO = new MesasDAO(context);
         situacaoDAO = new SituacaoDAO(context);
         classesDAO = new ClassesDAO(context);
+        personagensDAO = new PersonagensDAO(context);
     }
 
     @Override
@@ -55,5 +58,25 @@ public class PersonagemPresenter implements IPersonagemPresenter {
         mesasDAO = null;
         classesDAO = null;
         pj = null;
+    }
+
+    @Override
+    public void onAtivarButtonClick() {
+        if (pj != null){
+            int ativo = personagensDAO.getAtivo(pj.getId());
+            if (ativo == 0){
+                int ativoAtual = personagensDAO.foundIDAtivo();
+
+                personagensDAO.changeAtivo(ativoAtual, 0);
+                personagensDAO.changeAtivo(pj.getId(), 1);
+
+                MyApp.setPjAtivo(pj);
+                view.showToast("Personagem ativado");
+                return;
+            }
+            view.showToast("Personagem ativo");
+            return;
+        }
+        view.showToast("Algo deu errado");
     }
 }

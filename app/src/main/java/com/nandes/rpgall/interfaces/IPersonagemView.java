@@ -6,9 +6,5 @@ public interface IPersonagemView {
 
     void showPJDetails(String nome, String nivel, String mesa, String situacao, String classe);
     void navigateToEditScreen(Personagens pj);
-
-    interface onCadastroPersonagem{
-
-    }
-
+    void showToast(String message);
 }

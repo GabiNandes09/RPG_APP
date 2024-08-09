@@ -12,7 +12,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     //CONSTANTES
     private static final String DATABASE_NAME = "RPG.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 4;
     //CONSTANTES DE PERSONAGENS
     public static final String PJ_TABLE = "PERSONAGENS";
     public static final String PJ_ID = "IDPERSONAGEM";
@@ -21,6 +21,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String PJ_MESA = "ID_MESA";
     public static final String PJ_SITUACO = "ID_SITUACO";
     public static final String PJ_CLASSE = "ID_CLASSE";
+    public static final String PJ_ATIVO = "ID_ATIVO";
 
     // CONSTANTES SITUACAO
     public static final String SITUACAO_TABLE = "SITUACAO";
@@ -59,17 +60,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        String sql = "DROP TABLE IF EXISTS " + PJ_TABLE + ";";
-
-        try{
-            Log.i("Nandes", "Iniciando atualizaçao");
-            db.execSQL(sql);
-            Log.i("Nandes", "Tabela antiga excluida");
-        } catch (SQLException e){
-            Log.i("Nandes", "Erro ao excluir tabela antiga");
-        }
-
-        sql = "CREATE TABLE " + SITUACAO_TABLE + "(" +
+        String sql = "CREATE TABLE " + SITUACAO_TABLE + "(" +
                 SITUACAO_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 SITUACAO_NOME + " VARCHAR(12) NOT NULL UNIQUE" +
                 ");";
@@ -167,43 +158,72 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 
-        String sql = "CREATE TABLE " + DANO_P_TABLE + " (" +
-                DANO_P_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                DANO_P_NOME + " VARCHAR(15) UNIQUE " +
-                ")";
+        String sql = "CREATE TABLE CHANGE (" +
+                PJ_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                PJ_NOME + " TEXT NOT NULL UNIQUE, " +
+                PJ_NIVEL + " INTEGER NOT NULL, " +
+                PJ_CLASSE + " INTEGER NOT NULL, " +
+                PJ_MESA + " INTEGER, " +
+                PJ_SITUACO + " INTEGER NOT NULL DEFAULT 1 " +
+                ");";
+        try{
+        db.execSQL(sql);
+
+        }catch (SQLException e){
+            Log.i("Nandes", "Erro o criar tabel CHANGE");
+            e.printStackTrace();
+        }
+
+        sql = "INSERT INTO CHANGE (" + PJ_NOME + ", " + PJ_NIVEL + ", " + PJ_CLASSE +
+               ", " + PJ_MESA + ", " + PJ_SITUACO + ") SELECT " + PJ_NOME + ", " + PJ_NIVEL + ", " + PJ_CLASSE +
+                ", " + PJ_MESA + ", " + PJ_SITUACO + " FROM " + PJ_TABLE + ";";
+        try{
+            db.execSQL(sql);
+
+        }catch (SQLException e){
+            Log.i("Nandes", "Erro o enviar dados para change");
+            e.printStackTrace();
+        }
+
+        sql = "DROP TABLE " + PJ_TABLE;
+        try{
+            db.execSQL(sql);
+
+        }catch (SQLException e){
+            Log.i("Nandes", "Erro o enviar dados para change");
+            e.printStackTrace();
+        }
+
+        sql = "CREATE TABLE " + PJ_TABLE + "(" +
+                PJ_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                PJ_NOME + " TEXT NOT NULL UNIQUE, " +
+                PJ_NIVEL + " INTEGER NOT NULL, " +
+                PJ_CLASSE + " INTEGER NOT NULL, " +
+                PJ_ATIVO + " INTEGER NOT NULL DEFAULT 0, " +
+                PJ_MESA + " INTEGER, " +
+                PJ_SITUACO + " INTEGER NOT NULL DEFAULT 1, " +
+                "FOREIGN KEY (" + PJ_CLASSE + ") REFERENCES " + CLASSES_TABLE + "(" + CLASSES_ID + "), " +
+                "FOREIGN KEY (" + PJ_MESA + ") REFERENCES " + MESA_TABLE + "(" + MESA_ID + "), " +
+                "FOREIGN KEY (" + PJ_SITUACO + ") REFERENCES " + SITUACAO_TABLE + "(" + SITUACAO_ID + ") " +
+                ");";
 
         try{
             db.execSQL(sql);
-            Log.i("Nandes", "Tabela tipo_dano criada");
-        } catch (SQLException e){
-            Log.i("Nandes", "Erro ao criar tabela tipo_dano");
+            Log.i("Nandes", "Tabela Personagens criada");
+        } catch (SQLException e) {
+            Log.i("Nandes", "Erro ao criar tabela Personagens");
         }
 
-
-        sql = "CREATE TABLE " + DANO_S_TABLE + " (" +
-                DANO_S_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                DANO_S_NOME + " VARCHAR(15) UNIQUE " +
-                ")";
-
+        sql = "INSERT INTO " + PJ_TABLE + "(" + PJ_NOME + ", " + PJ_NIVEL + ", " + PJ_CLASSE +
+                ", " + PJ_MESA + ", " + PJ_SITUACO + ") SELECT " + PJ_NOME + ", " + PJ_NIVEL + ", " + PJ_CLASSE +
+                ", " + PJ_MESA + ", " + PJ_SITUACO + " FROM CHANGE;";
         try{
             db.execSQL(sql);
-            Log.i("Nandes", "Tabela tipo_dano_secundario criada");
-        } catch (SQLException e){
-            Log.i("Nandes", "Erro ao criar tabela tipo_dano_secundario");
+
+        }catch (SQLException e){
+            Log.i("Nandes", "Erro o enviar dados para change");
+            e.printStackTrace();
         }
 
-        sql = "CREATE TABLE " + DANO_T_TABLE + " (" +
-                DANO_T_P + " INT, " +
-                DANO_T_S + " INT, " +
-                "FOREIGN KEY (" + DANO_T_P + " ) REFERENCES " + DANO_P_TABLE + "(" + DANO_P_ID + "), " +
-                "FOREIGN KEY (" + DANO_T_S + " ) REFERENCES " + DANO_S_TABLE + "(" + DANO_S_ID + ") " +
-                ")";
-
-        try{
-            db.execSQL(sql);
-            Log.i("Nandes", "Tabela tipo_dano_total criada");
-        } catch (SQLException e){
-            Log.i("Nandes", "Erro ao criar tabela tipo_dano_total");
-        }
     }
 }

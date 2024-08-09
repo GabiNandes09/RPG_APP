@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.navigation.NavigationBarView;
+import com.nandes.rpgall.MyApp;
 import com.nandes.rpgall.R;
 import com.nandes.rpgall.databinding.ActivityMainBinding;
 import com.nandes.rpgall.fragments.*;
@@ -58,6 +59,9 @@ public class MainActivity extends AppCompatActivity implements IMainView {
 
     @Override
     public void startFragment() {
+
+        MyApp.get();
+
         getSupportFragmentManager()
                 .beginTransaction()
                 .add(binding.fragmentContainerView.getId(), presenter.getHomeFragment())

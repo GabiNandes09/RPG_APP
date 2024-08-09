@@ -18,7 +18,7 @@
         tools:src="@tools:sample/avatars" />
 
     <TextView
-        android:id="@+id/txtNome"
+        android:id="@+id/txtNomePerfil"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -28,13 +28,13 @@
         tools:text="Gabriel Gonçalves Fernandes" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/txtQtdPJ"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="PERSONAGENS:"
-        app:layout_constraintStart_toStartOf="@+id/txtNome"
-        app:layout_constraintTop_toBottomOf="@+id/txtNome"
+        app:layout_constraintStart_toStartOf="@+id/txtNomePerfil"
+        app:layout_constraintTop_toBottomOf="@+id/txtNomePerfil"
         tools:text="Personagens: 8" />
 
     <TextView
@@ -43,11 +43,11 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="Personagem ativo"
-        app:layout_constraintStart_toStartOf="@+id/textView3"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+        app:layout_constraintStart_toStartOf="@+id/txtQtdPJ"
+        app:layout_constraintTop_toBottomOf="@+id/txtQtdPJ" />
 
     <TextView
-        android:id="@+id/textView5"
+        android:id="@+id/txtPjNome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -58,13 +58,23 @@
 " />
 
     <TextView
-        android:id="@+id/textView6"
+        android:id="@+id/txtPjNivel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Nível:"
+        app:layout_constraintBottom_toBottomOf="@+id/txtPjClasse"
+        app:layout_constraintStart_toEndOf="@+id/txtPjClasse"
+        app:layout_constraintTop_toTopOf="@+id/txtPjClasse"
+        tools:text="Nível: 5" />
+
+    <TextView
+        android:id="@+id/txtPjClasse"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Nível:"
-        app:layout_constraintStart_toStartOf="@+id/textView5"
-        app:layout_constraintTop_toBottomOf="@+id/textView5"
-        tools:text="Nível: 5" />
+        app:layout_constraintStart_toStartOf="@+id/txtPjNome"
+        app:layout_constraintTop_toBottomOf="@+id/txtPjNome"
+        android:text="Classe: Barbaro"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -76,6 +76,26 @@ public class PersonagensDAO {
 
         return list;
     }
+    public Personagens getPersonagemByID(int id){
+        Personagens pj = new Personagens();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String sql = "SELECT * FROM " + DatabaseHelper.PJ_TABLE + " WHERE " + DatabaseHelper.PJ_ID + " = ?;";
+        String[] args = new String[]{String.valueOf(id)};
+
+        try (Cursor cursor = db.rawQuery(sql, args)){
+            while (cursor.moveToNext()){
+                pj.setId(cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.PJ_ID)));
+                pj.setNome(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.PJ_NOME)));
+                pj.setNivel(cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.PJ_NIVEL)));
+                pj.setClasse(cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.PJ_CLASSE)));
+                pj.setMesa(cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.PJ_MESA)));
+                pj.setSituacao(cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.PJ_SITUACO)));
+            }
+        } catch (Exception e){
+
+        }
+        return pj;
+    }
 
     //UPDATE - ATUALIZAR
 
@@ -100,6 +120,53 @@ public class PersonagensDAO {
         }
 
 
+    }
+
+    public void changeAtivo (int id, int ativo){
+
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.PJ_ATIVO, ativo);
+
+        try {
+            db.update(
+                    DatabaseHelper.PJ_TABLE,
+                    values,
+                    DatabaseHelper.PJ_ID + " = ?",
+                    new String[]{String.valueOf(id)}
+            );
+        } catch (Exception e){
+            Log.i("Nandes", "Erro ao mudar ativo");
+        }
+    }
+    public int foundIDAtivo(){
+        int id = -1;
+
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String sql = "SELECT " + DatabaseHelper.PJ_ID + " FROM " + DatabaseHelper.PJ_TABLE + " WHERE " + DatabaseHelper.PJ_ATIVO + " = ?";
+
+        try (Cursor cursor = db.rawQuery(sql, new String[]{"1"})){
+            while (cursor.moveToNext()){
+                id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.PJ_ID));
+            }
+        }
+
+        return id;
+    }
+    public int getAtivo(int id){
+        int ativo = -1;
+
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String sql = "SELECT " + DatabaseHelper.PJ_ATIVO + " FROM " + DatabaseHelper.PJ_TABLE + " WHERE " + DatabaseHelper.PJ_ID + " = ?";
+
+        try (Cursor cursor = db.rawQuery(sql, new String[]{String.valueOf(id)})){
+            while (cursor.moveToNext()){
+                ativo = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.PJ_ATIVO));
+            }
+        }
+
+        return ativo;
     }
 
 }
