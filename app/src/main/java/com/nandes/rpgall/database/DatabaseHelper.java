@@ -1,5 +1,6 @@
 package com.nandes.rpgall.database;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -12,7 +13,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     //CONSTANTES
     private static final String DATABASE_NAME = "RPG.db";
-    private static final int DATABASE_VERSION = 4;
+    private static final int DATABASE_VERSION = 7;
     //CONSTANTES DE PERSONAGENS
     public static final String PJ_TABLE = "PERSONAGENS";
     public static final String PJ_ID = "IDPERSONAGEM";
@@ -40,19 +41,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String MESA_SITUACAO = "ID_SITUACAO";
 
     //CONSTANTES TIPO_DANO
-    public static final String DANO_P_TABLE = "TIPO_DANO";
-    public static final String DANO_P_ID = "ID";
-    public static final String DANO_P_NOME = "NOME";
+    public static final String TIPO_DANO_TABLE = "TIPO_DANO";
+    public static final String TIPO_DANO_ID = "ID";
+    public static final String TIPO_DANO_NOME = "NOME";
 
-    //CONSTANTES TIPO_DANO_SECUNDARIO
-    public static final String DANO_S_TABLE = "TIPO_DANO_SECUNDARIO";
-    public static final String DANO_S_ID = "ID";
-    public static final String DANO_S_NOME = "NOME";
+    //CONSTANTES EFEITO_CRITICO
+    public static final String EFEITO_CRITICO_TABLE = "EFEITO_CRITICO";
+    public static final String EFEITO_CRITICO_ID = "ID";
+    public static final String EFEITO_CRITICO_NOME = "NOME";
+    public static final String EFEITO_CRITICO_DESCRICAO = "DESCRICAO";
+    public static final String EFEITO_CRITICO_TIPO_DANO = "ID_TIPO_DANO";
 
-    //CONSTANTES TIPO_DANO_TOTAL
-    public static final String DANO_T_TABLE = "TIPO_DANO_TOTAL";
-    public static final String DANO_T_P = "ID_P";
-    public static final String DANO_T_S = "ID_S";
+    //CONSTANTES NATUREZA_MAGIA
+    public static final String NATUREZA_MAGIA_TABLE = "NATUREZA_MAGIA";
+    public static final String NATUREZA_MAGIA_ID = "ID";
+    public static final String NATUREZA_MAGIA_NOME = "NOME";
 
     public DatabaseHelper(@Nullable Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -138,67 +141,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 PJ_NOME + " TEXT NOT NULL UNIQUE, " +
                 PJ_NIVEL + " INTEGER NOT NULL, " +
                 PJ_CLASSE + " INTEGER NOT NULL, " +
-                PJ_MESA + " INTEGER, " +
-                PJ_SITUACO + " INTEGER NOT NULL DEFAULT 1, " +
-                "FOREIGN KEY (" + PJ_CLASSE + ") REFERENCES " + CLASSES_TABLE + "(" + CLASSES_ID + "), " +
-                "FOREIGN KEY (" + PJ_MESA + ") REFERENCES " + MESA_TABLE + "(" + MESA_ID + "), " +
-                "FOREIGN KEY (" + PJ_SITUACO + ") REFERENCES " + SITUACAO_TABLE + "(" + SITUACAO_ID + ") " +
-                ");";
-
-        try{
-            db.execSQL(sql);
-            Log.i("Nandes", "Tabela Personagens criada");
-        } catch (SQLException e) {
-            Log.i("Nandes", "Erro ao criar tabela Personagens");
-        }
-
-
-    }
-
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
-        String sql = "CREATE TABLE CHANGE (" +
-                PJ_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                PJ_NOME + " TEXT NOT NULL UNIQUE, " +
-                PJ_NIVEL + " INTEGER NOT NULL, " +
-                PJ_CLASSE + " INTEGER NOT NULL, " +
-                PJ_MESA + " INTEGER, " +
-                PJ_SITUACO + " INTEGER NOT NULL DEFAULT 1 " +
-                ");";
-        try{
-        db.execSQL(sql);
-
-        }catch (SQLException e){
-            Log.i("Nandes", "Erro o criar tabel CHANGE");
-            e.printStackTrace();
-        }
-
-        sql = "INSERT INTO CHANGE (" + PJ_NOME + ", " + PJ_NIVEL + ", " + PJ_CLASSE +
-               ", " + PJ_MESA + ", " + PJ_SITUACO + ") SELECT " + PJ_NOME + ", " + PJ_NIVEL + ", " + PJ_CLASSE +
-                ", " + PJ_MESA + ", " + PJ_SITUACO + " FROM " + PJ_TABLE + ";";
-        try{
-            db.execSQL(sql);
-
-        }catch (SQLException e){
-            Log.i("Nandes", "Erro o enviar dados para change");
-            e.printStackTrace();
-        }
-
-        sql = "DROP TABLE " + PJ_TABLE;
-        try{
-            db.execSQL(sql);
-
-        }catch (SQLException e){
-            Log.i("Nandes", "Erro o enviar dados para change");
-            e.printStackTrace();
-        }
-
-        sql = "CREATE TABLE " + PJ_TABLE + "(" +
-                PJ_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                PJ_NOME + " TEXT NOT NULL UNIQUE, " +
-                PJ_NIVEL + " INTEGER NOT NULL, " +
-                PJ_CLASSE + " INTEGER NOT NULL, " +
                 PJ_ATIVO + " INTEGER NOT NULL DEFAULT 0, " +
                 PJ_MESA + " INTEGER, " +
                 PJ_SITUACO + " INTEGER NOT NULL DEFAULT 1, " +
@@ -214,16 +156,75 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Log.i("Nandes", "Erro ao criar tabela Personagens");
         }
 
-        sql = "INSERT INTO " + PJ_TABLE + "(" + PJ_NOME + ", " + PJ_NIVEL + ", " + PJ_CLASSE +
-                ", " + PJ_MESA + ", " + PJ_SITUACO + ") SELECT " + PJ_NOME + ", " + PJ_NIVEL + ", " + PJ_CLASSE +
-                ", " + PJ_MESA + ", " + PJ_SITUACO + " FROM CHANGE;";
-        try{
-            db.execSQL(sql);
+        sql = "CREATE TABLE " + TIPO_DANO_TABLE + " ( " +
+                TIPO_DANO_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                TIPO_DANO_NOME + " VARCHAR(12) UNIQUE NOT NULL " +
+                " );";
 
-        }catch (SQLException e){
-            Log.i("Nandes", "Erro o enviar dados para change");
-            e.printStackTrace();
+        try {
+            db.execSQL(sql);
+            Log.i("Nandes", "Tabela TIPO_DANO criada");
+        } catch (SQLException e){
+            Log.i("Nandes", "Erro ao criar tabela TIPO_DANO");
         }
+
+        sql = "INSERT INTO " + TIPO_DANO_TABLE + " (" + TIPO_DANO_NOME + ") VALUES ('CONCUSSÃO'), ('PERFURANTE'), ('CORTANTE'), ('MÁGICO');";
+
+        try {
+            db.execSQL(sql);
+            Log.i("Nandes", "Dados TIPO_DANO inseridos");
+        } catch (SQLException e) {
+            Log.i("Nandes", "Erro ao inserir TIPO_DANO");
+        }
+
+
+        sql = "CREATE TABLE " + EFEITO_CRITICO_TABLE + " ( " +
+                EFEITO_CRITICO_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                EFEITO_CRITICO_NOME + " VARCHAR(20) UNIQUE NOT NULL, " +
+                EFEITO_CRITICO_DESCRICAO + " TEXT NOT NULL, " +
+                EFEITO_CRITICO_TIPO_DANO + " INTEGER, " +
+                "FOREIGN KEY ( " + EFEITO_CRITICO_TIPO_DANO + " ) REFERENCES " + TIPO_DANO_TABLE + " ( " + TIPO_DANO_ID + " )" +
+                " );";
+        try {
+            db.execSQL(sql);
+            Log.i("Nandes", "Tabela EFEITO_CRITICO criada");
+        } catch (SQLException e){
+            Log.i("Nandes", "Erro ao criar tabela EFEITO_CRITICO");
+        }
+
+        sql = "CREATE TABLE " + NATUREZA_MAGIA_TABLE + "(" +
+                NATUREZA_MAGIA_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                NATUREZA_MAGIA_NOME + " VARCHAR(10) UNIQUE NOT NULL " +
+                ")" ;
+
+        try {
+            db.execSQL(sql);
+            Log.i("Nandes", "Tabela NATUREZA_MAGIA criada");
+        } catch (SQLException e){
+            Log.i("Nandes", "Erro ao criar tabela NATUREZA_MAGIA");
+        }
+
+
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
+        String sql = "INSERT INTO " + NATUREZA_MAGIA_TABLE + " (" + NATUREZA_MAGIA_NOME + ") VALUES " +
+                "('FOGO'), " +
+                "('GELO'), " +
+                "('ELÉTRICO'), " +
+                "('NECRÓTICO');";
+
+        try {
+            db.execSQL(sql);
+            Log.i("Nandes", "Dados NATUREZA_MAGIA inseridos");
+        } catch (SQLException e) {
+            Log.i("Nandes", "Erro ao inserir NATUREZA_MAGIA");
+        }
+
+
+
 
     }
 }
